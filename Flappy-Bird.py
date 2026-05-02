@@ -1,6 +1,7 @@
 from pygame import *
 from random import *
 #Создание окна и тд.
+Finished = False
 score = 0
 x = 700
 y = 500
@@ -11,9 +12,9 @@ font.init()
 font1 = font.SysFont('Arial', 36) 
 #Классы, фукции
 class GameSprite(sprite.Sprite):
-    def __init__(self, player_image, player_x, player_y, player_speed):
+    def __init__(self, player_image, player_x, player_y, width, height, player_speed):
         super().__init__()
-        self.image = transform.scale(image.load(player_image), (65, 65))
+        self.image = transform.scale(image.load(player_image), (width, height))
         self.speed = player_speed
         self.rect = self.image.get_rect()
         self.rect.x = player_x
@@ -22,8 +23,8 @@ class GameSprite(sprite.Sprite):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
 class Player(GameSprite):
-    def __init__(self, player_image, player_x, player_y, player_speed):
-        super().__init__(player_image, player_x, player_y, player_speed)
+    def __init__(self, player_image, player_x, player_y, width, height, player_speed):
+        super().__init__(player_image, player_x, player_y, width, height, player_speed)
         self.velocity = 0  # Текущая скорость падения
         self.gravity = 0.6 # Сила притяжения (настрой под себя)
         self.jump_power = -10 # Сила прыжка
@@ -42,50 +43,65 @@ class Player(GameSprite):
         if (keys[K_w] or keys[K_UP]) and self.rect.y > 5:
             self.velocity = self.jump_power
 
-Bird = Player('pony.jpg', 300, 200, 5)
+Bird = Player('pony.jpg', 300, 200, 65, 65, 5)
 
 class Wall(GameSprite):
-    def __init__(self, player_image, player_x, player_y, player_speed):
-        super().__init__(player_image, player_x, player_y, player_speed)
+    def __init__(self, player_image, player_x, player_y, width, height, player_speed):
+        super().__init__(player_image, player_x, player_y, width, height, player_speed)
+        self.passed = False
 
 
-    def spawn(self):
-        global score
+    def spawn1(self):
         self.rect.x = 800 + 150
-        score += 0.5
-        print('Счёт:',score)
+        self.passed = False
+        self.rect.y = randrange(100, 250)
+    
+    def spawn2(self):
+        self.rect.x = 800 + 150
+        self.passed = False
+        self.rect.y = randrange(350, 500)
 
-    def update(self):
+
+
+    def update1(self):
         self.rect.x -= self.speed
         if self.rect.right < 0:
-            self.spawn()
+            self.spawn1()
 
-def finish():
-    None
+    def update2(self):
+        self.rect.x -= self.speed
+        if self.rect.right < 0:
+            self.spawn2()
 
-wall2 = Wall('T2.png', 710, 200, 5)
-wall1 = Wall('T1.png', 710, 400, 5)
+wall2 = Wall('T2.png', 710, 10, 65, 300, 5)
+wall1 = Wall('T1.png', 710, 450, 65, 300, 5)
 walls = sprite.Group()
 #игра
 clock = time.Clock()
 FPS = 60
 game = True
 while game:
-    screen.blit(background, (0, 0))
     for e in event.get():
         if e.type == QUIT:
             game = False
 
-    Bird.update()
-    Bird.reset()
+    if not Finished:
+        screen.blit(background, (0, 0))
+        
+        Bird.update()
+        Bird.reset()
 
-    wall1.update()
-    wall1.reset()
+        wall1.update2()
+        wall1.reset()
 
-    wall2.update()
-    wall2.reset()
+        wall2.update1()
+        wall2.reset()
 
-    #Отрисовка текста. font1.render("Вы проиграли", True, (255, 0, 0))
+        if sprite.collide_rect(Bird, wall1) or sprite.collide_rect(Bird, wall2):
+            Finished = True
+    else:
+        lose = font1.render("Вы проиграли", True, (128, 0, 0))
+        screen.blit(lose, (x // 2 - 125, y // 2 - 50))
 
     clock.tick(FPS)
     display.update()

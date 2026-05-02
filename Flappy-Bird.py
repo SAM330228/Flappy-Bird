@@ -52,9 +52,11 @@ class Wall(GameSprite):
 
 
     def spawn1(self):
+        global score
         self.rect.x = 800 + 150
         self.passed = False
         self.rect.y = randint(-10, 0) 
+        score += 1
     
     def spawn2(self):
         self.rect.x = 800 + 150
@@ -98,6 +100,9 @@ while game:
         draw.rect(screen, (0, 0, 255), wall2.rect, 2)
         draw.rect(screen, (0, 255, 0), Bird.rect, 2)
 
+        scored = font1.render(f"Счет: {score}", True, (255, 200, 255))
+        screen.blit(scored, (10, 10))
+
         if sprite.collide_rect(Bird, wall1) or sprite.collide_rect(Bird, wall2):
             Finished = True
     else:
@@ -106,3 +111,4 @@ while game:
 
     clock.tick(FPS)
     display.update()
+    

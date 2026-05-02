@@ -1,7 +1,6 @@
 from pygame import *
 from random import *
-#Создание окна и тд.
-Finished = False
+
 score = 0
 x = 700
 y = 500
@@ -10,7 +9,7 @@ display.set_caption('Pony-Bird')
 background = transform.scale(image.load('clouds.png'),(x,y))
 font.init()
 font1 = font.SysFont('Arial', 36) 
-#Классы, фукции
+
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, width, height, player_speed):
         super().__init__()
@@ -25,16 +24,14 @@ class GameSprite(sprite.Sprite):
 class Player(GameSprite):
     def __init__(self, player_image, player_x, player_y, width, height, player_speed):
         super().__init__(player_image, player_x, player_y, width, height, player_speed)
-        self.velocity = 0  # Текущая скорость падения
-        self.gravity = 0.6 # Сила притяжения (настрой под себя)
-        self.jump_power = -10 # Сила прыжка
+        self.velocity = 0 
+        self.gravity = 0.6 
+        self.jump_power = -10
 
     def update(self):
-        # 1. Гравитация постоянно тянет вниз
         self.velocity += self.gravity
         self.rect.y += self.velocity
 
-        # 2. Ограничение по нижней границе экрана
         if self.rect.y > 435:
             self.rect.y = 435
             self.velocity = 0
@@ -48,19 +45,15 @@ Bird = Player('pony.jpg', 300, 200, 50, 50, 5)
 class Wall(GameSprite):
     def __init__(self, player_image, player_x, player_y, width, height, player_speed):
         super().__init__(player_image, player_x, player_y, width, height, player_speed)
-        self.passed = False
-
 
     def spawn1(self):
         global score
         self.rect.x = 800 + 150
-        self.passed = False
         self.rect.y = randint(-10, 0) 
         score += 1
     
     def spawn2(self):
         self.rect.x = 800 + 150
-        self.passed = False
         self.rect.y = randint(300, 450)
 
     def update1(self):
@@ -75,7 +68,7 @@ class Wall(GameSprite):
 
 wall2 = Wall('T2.png', 710, -50, 65, 200, 5)
 wall1 = Wall('T1.png', 710, 300, 65, 200, 5)
-#игра
+
 clock = time.Clock()
 FPS = 60
 game = True
@@ -111,4 +104,3 @@ while game:
 
     clock.tick(FPS)
     display.update()
-    

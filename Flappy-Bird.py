@@ -8,7 +8,7 @@ screen = display.set_mode((x,y))
 display.set_caption('Pony-Bird')
 background = transform.scale(image.load('clouds.png'),(x,y))
 font.init()
-font1 = font.SysFont('Вы проиграли', 36) 
+font1 = font.SysFont('Arial', 36) 
 #Классы, фукции
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, player_speed):
@@ -22,18 +22,25 @@ class GameSprite(sprite.Sprite):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
 class Player(GameSprite):
-    def update(self):
-        #Движение
-        self.speed_y = self.speed
-        self.rect.y += self.speed_y * 3 and self.rect.y < 435
+    def __init__(self, player_image, player_x, player_y, player_speed):
+        super().__init__(player_image, player_x, player_y, player_speed)
+        self.velocity = 0  # Текущая скорость падения
+        self.gravity = 0.6 # Сила притяжения (настрой под себя)
+        self.jump_power = -10 # Сила прыжка
 
-        #Клавиши
+    def update(self):
+        # 1. Гравитация постоянно тянет вниз
+        self.velocity += self.gravity
+        self.rect.y += self.velocity
+
+        # 2. Ограничение по нижней границе экрана
+        if self.rect.y > 435:
+            self.rect.y = 435
+            self.velocity = 0
+
         keys = key.get_pressed()
-        if keys[K_w] and self.rect.y > 5:
-            self.rect.y -= self.speed
-        
-        if keys[K_UP] and self.rect.y > 5:
-            self.rect.y -= self.speed
+        if (keys[K_w] or keys[K_UP]) and self.rect.y > 5:
+            self.velocity = self.jump_power
 
 Bird = Player('pony.jpg', 300, 200, 5)
 
@@ -46,7 +53,7 @@ class Wall(GameSprite):
         global score
         self.rect.x = 800 + 150
         score += 0.5
-        print(score)
+        print('Счёт:',score)
 
     def update(self):
         self.rect.x -= self.speed
@@ -55,8 +62,9 @@ class Wall(GameSprite):
 
 def finish():
     None
-wall2 = Wall('T1.png', 710, 30, 5)
-wall1 = Wall('T1.png', 710, 470, 5)
+
+wall2 = Wall('T2.png', 710, 200, 5)
+wall1 = Wall('T1.png', 710, 400, 5)
 walls = sprite.Group()
 #игра
 clock = time.Clock()
@@ -76,6 +84,8 @@ while game:
 
     wall2.update()
     wall2.reset()
+
+    #Отрисовка текста. font1.render("Вы проиграли", True, (255, 0, 0))
 
     clock.tick(FPS)
     display.update()

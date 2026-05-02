@@ -1,6 +1,6 @@
 from pygame import *
 from random import *
-
+Finished = False
 score = 0
 x = 700
 y = 500
@@ -104,3 +104,4 @@ while game:
 
     clock.tick(FPS)
     display.update()
+    

@@ -1,6 +1,7 @@
 from pygame import *
 from random import *
 #Создание окна и тд.
+score = 0
 x = 700
 y = 500
 screen = display.set_mode((x,y))
@@ -8,7 +9,6 @@ display.set_caption('Pony-Bird')
 background = transform.scale(image.load('clouds.png'),(x,y))
 font.init()
 font1 = font.SysFont('Вы проиграли', 36) 
-
 #Классы, фукции
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, player_speed):
@@ -41,14 +41,20 @@ class Wall(GameSprite):
     def __init__(self, player_image, player_x, player_y, player_speed):
         super().__init__(player_image, player_x, player_y, player_speed)
 
+
     def spawn(self):
+        global score
         self.rect.x = 800 + 150
+        score += 0.5
+        print(score)
 
     def update(self):
         self.rect.x -= self.speed
         if self.rect.right < 0:
             self.spawn()
 
+def finish():
+    None
 wall2 = Wall('T1.png', 710, 30, 5)
 wall1 = Wall('T1.png', 710, 470, 5)
 walls = sprite.Group()
@@ -73,3 +79,4 @@ while game:
 
     clock.tick(FPS)
     display.update()
+    

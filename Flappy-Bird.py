@@ -43,7 +43,7 @@ class Player(GameSprite):
         if (keys[K_w] or keys[K_UP]) and self.rect.y > 5:
             self.velocity = self.jump_power
 
-Bird = Player('pony.jpg', 300, 200, 65, 65, 5)
+Bird = Player('pony.jpg', 300, 200, 50, 50, 5)
 
 class Wall(GameSprite):
     def __init__(self, player_image, player_x, player_y, width, height, player_speed):
@@ -54,14 +54,12 @@ class Wall(GameSprite):
     def spawn1(self):
         self.rect.x = 800 + 150
         self.passed = False
-        self.rect.y = randrange(100, 250)
+        self.rect.y = randint(-10, 0) 
     
     def spawn2(self):
         self.rect.x = 800 + 150
         self.passed = False
-        self.rect.y = randrange(350, 500)
-
-
+        self.rect.y = randint(300, 450)
 
     def update1(self):
         self.rect.x -= self.speed
@@ -73,9 +71,8 @@ class Wall(GameSprite):
         if self.rect.right < 0:
             self.spawn2()
 
-wall2 = Wall('T2.png', 710, 10, 65, 300, 5)
-wall1 = Wall('T1.png', 710, 450, 65, 300, 5)
-walls = sprite.Group()
+wall2 = Wall('T2.png', 710, -50, 65, 200, 5)
+wall1 = Wall('T1.png', 710, 300, 65, 200, 5)
 #игра
 clock = time.Clock()
 FPS = 60
@@ -97,6 +94,10 @@ while game:
         wall2.update1()
         wall2.reset()
 
+        draw.rect(screen, (0, 0, 255), wall1.rect, 2)
+        draw.rect(screen, (0, 0, 255), wall2.rect, 2)
+        draw.rect(screen, (0, 255, 0), Bird.rect, 2)
+
         if sprite.collide_rect(Bird, wall1) or sprite.collide_rect(Bird, wall2):
             Finished = True
     else:
@@ -105,4 +106,3 @@ while game:
 
     clock.tick(FPS)
     display.update()
-    
